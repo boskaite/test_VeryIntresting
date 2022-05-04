@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress bar</title>
+    <style>
+        lable {
+            color: red;
+            font-size: larger;
+        }
+        #container_progress_bar {
+            position: relative;
+        }
+        #time_seconds:invalid {
+            border-color: red;
+        }
+        #progress_bar {
+            height: 30px;
+            width: 100%;
+            margin: 10px 0;
+            background-color: rgb(174, 255, 92);
+        }
+        #lable_progress_bar {
+            position: absolute;
+            top: 0;
+            left: 48%;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="main_window">
+        <form name="get_seconds">
+            <lable for="time_seconds">Введите список шагов цифрами через запятую без пробелов:</lable>
+            <input id="time_seconds" type="text" pattern="^[0-9,]+$">
+            <input id="set_seconds" type="button" onclick="startProgressBar()" value="Старт"></input>
+        </form>
+        <div id="container_progress_bar">
+            <progress id="progress_bar" value="0" max="100"></progress>
+            <p id="lable_progress_bar"></p>
+        </div>
+    </div>
+    <script>  
+        function startProgressBar() {
+            let str_seconds = document.getElementById('time_seconds').value;
+            let array_str_seconds = str_seconds.split(",");
+            let array_seconds = Array.from(new Set(array_str_seconds));
+            for (let i=0; i<array_seconds.length; i++) {
+                if (isNaN(array_seconds[i])) {
+                    document.getElementById('progress_bar').value = 0;
+                    return 0;
+                }
+            }
+            let count = 0;
+            let i=0;
+            document.getElementById('progress_bar').value = 0;
+            document.getElementById('lable_progress_bar').textContent = Math.round(count)+"%";
+            const playProgressBar = (value, array_seconds, i) => {
+                document.getElementById('progress_bar').value = value;
+                document.getElementById('lable_progress_bar').textContent = Math.round(count)+"%";
+                if (i < array_seconds.length) {
+                    count += 100 / array_seconds.length;
+                    timer(count, array_seconds, i);
+                }
+            };
+            count += 100 / array_seconds.length;
+            let timer = (count, array_seconds, i) => {
+                let millSeconds = array_seconds[i] * 1000;
+                i++;
+                setTimeout(playProgressBar, millSeconds, count, array_seconds, i);
+            };
+            timer(count, array_seconds, i);
+        }
+    </script>
+</body>
+</html>
